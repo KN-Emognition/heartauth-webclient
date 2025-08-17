@@ -1,4 +1,4 @@
-# docker build -t heartauth-app .
+# docker build -t auth-webclient .
 
 FROM node:20-bookworm AS deps
 WORKDIR /app
