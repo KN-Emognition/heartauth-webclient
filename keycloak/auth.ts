@@ -8,7 +8,7 @@ export const authOptions: NextAuthOptions = {
       jwks_endpoint: `${process.env.NEXT_CONTAINER_KEYCLOAK_ENDPOINT}/realms/${process.env.NEXT_PUBLIC_KEYCLOAK_REALM}/protocol/openid-connect/certs`,
       wellKnown: undefined,
       clientId: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!, 
+      clientSecret: process.env.NEXT_KEYCLOAK_CLIENT_SECRET!, 
       issuer: `${process.env.NEXT_LOCAL_KEYCLOAK_URL}/realms/${process.env.NEXT_PUBLIC_KEYCLOAK_REALM}`,
       authorization: {
         params: {
