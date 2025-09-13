@@ -1,4 +1,4 @@
-import { authOptions } from "@/keycloak/auth";
+import authOptions from "@/keycloak/auth";
 import NextAuth from "next-auth";
 
 const handler = NextAuth(authOptions);

@@ -15,13 +15,6 @@ export function Navbar() {
         </Link>
 
         <nav className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            Dashboard
-          </Link>
-
           {status === "loading" ? (
             <div className="h-9 w-20 animate-pulse rounded bg-gray-200" />
           ) : session ? (

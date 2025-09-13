@@ -1,8 +1,10 @@
-import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Providers } from "./providers";
+import { getServerSession } from "next-auth";
+import authOptions from "@/keycloak/auth";
+import { Navbar } from "@/components/Navbar";
+import { SessionProvider } from "@/components/SessionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,18 +13,20 @@ export const metadata: Metadata = {
   description: "Next.js + Keycloak demo",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen flex flex-col">
-          <Providers>
+          <SessionProvider session={session}>
             <Navbar />
-            <main className="flex-1 bg-gray-50 ">
+            <main className="flex-1 bg-gray-50">
               <div className="container max-w-5xl py-8 mx-auto">{children}</div>
             </main>
             <footer className="border-t bg-white">
@@ -30,7 +34,7 @@ export default function RootLayout({
                 © {new Date().getFullYear()} HeartAuth
               </div>
             </footer>
-          </Providers>
+          </SessionProvider>
         </div>
       </body>
     </html>
