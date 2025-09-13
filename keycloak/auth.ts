@@ -1,7 +1,8 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     KeycloakProvider({
       clientId: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID!,
@@ -9,22 +10,17 @@ export const authOptions: NextAuthOptions = {
       issuer: process.env.NEXT_PUBLIC_KEYCLOAK_ISSUER!,
     }),
   ],
-  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {
-      if (account) {
-        token.access_token = account.access_token;
-        token.refresh_token = account.refresh_token;
-        token.id_token = account.id_token;
-      }
+      if (account?.id_token) token.id_token = account.id_token;
+      if (account?.access_token) token.access_token = account.access_token;
       return token;
     },
     async session({ session, token }) {
-      // @ts-expect-error add tokens to session object
-      session.access_token = token.access_token;
+      session.id_token = token.id_token as string | undefined;
+      session.access_token = token.access_token as string | undefined;
       return session;
     },
   },
 };
-
-export default NextAuth(authOptions);
+export default authOptions;

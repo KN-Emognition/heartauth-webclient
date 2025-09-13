@@ -1,5 +1,5 @@
-import { LoginButton, LogoutButton } from "@/components/AuthButtons";
-import { authOptions } from "@/keycloak/auth";
+import { LoginButton } from "@/components/AuthButtons";
+import authOptions from "@/keycloak/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 
@@ -17,7 +17,7 @@ export default async function Home() {
         </p>
 
         <div className="mt-6 flex gap-3">
-          {!session ? (
+          {!session && (
             <>
               <LoginButton />
               <Link
@@ -26,16 +26,6 @@ export default async function Home() {
               >
                 Learn more
               </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/dashboard"
-                className="h-9 inline-flex items-center rounded-md bg-gray-900 text-white px-5 hover:bg-gray-800"
-              >
-                Go to dashboard
-              </Link>
-              <LogoutButton />
             </>
           )}
         </div>
