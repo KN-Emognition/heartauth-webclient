@@ -1,18 +1,21 @@
-import { NextResponse } from "next/server";
-
 export async function GET() {
-  const res = NextResponse.redirect(new URL("/", process.env.NEXTAUTH_URL!));
-
-  const cookieNames = [
-    "next-auth.session-token",
-    "__Secure-next-auth.session-token",
-    "next-auth.callback-url",
-    "next-auth.csrf-token",
-    "next-auth.state",
-  ];
-  for (const name of cookieNames) {
-    res.cookies.set(name, "", { path: "/", maxAge: 0 });
-  }
-
-  return res;
+  const html = `<!doctype html>
+<html><body>
+  <form id="f" method="POST" action="/api/auth/signout">
+    <input type="hidden" name="callbackUrl" value="/" />
+    <input type="hidden" name="csrfToken" value="" />
+  </form>
+  <script>
+    fetch('/api/auth/csrf')
+      .then(r => r.json())
+      .then(({ csrfToken }) => {
+        document.querySelector('input[name="csrfToken"]').value = csrfToken;
+        document.getElementById('f').submit();
+      })
+      .catch(() => { window.location.href = '/'; });
+  </script>
+</body></html>`;
+  return new Response(html, {
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
 }

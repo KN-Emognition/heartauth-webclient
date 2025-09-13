@@ -10,12 +10,10 @@ export async function GET(req: NextRequest) {
     process.env.NEXTAUTH_URL!
   ).toString();
 
-  const base = issuer.replace(/\/+$/, "");
-  const url = new URL(`${base}/protocol/openid-connect/logout`);
+  const url = new URL(`${issuer.replace(/\/+$/, "")}/protocol/openid-connect/logout`);
   url.searchParams.set("post_logout_redirect_uri", postLogout);
   url.searchParams.set("client_id", clientId);
-  if (token?.id_token)
-    url.searchParams.set("id_token_hint", token.id_token as string);
+  if (token?.id_token) url.searchParams.set("id_token_hint", token.id_token as string);
 
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, { status: 302 });
 }
