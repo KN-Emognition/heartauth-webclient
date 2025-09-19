@@ -1,36 +1,17 @@
 name: Release (tagged)
-
 on:
   push:
     tags:
       - '*' 
-
 jobs:
   release-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      SERVICE_NAME: auth-webclient
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install deps
-        run: npm ci
-
-      # Optional gates
-      # - name: Lint
-      #   run: npm run lint
-      # - name: Test
-      #   run: npm test -- --ci
-
-      - name: Build
-        run: npm run build
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Buildx
@@ -44,8 +25,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ${{ secrets.P3_DH_USERNAME }}/auth-webclient:${{ github.ref_name }}
+            ${{ secrets.P3_DH_USERNAME }}/${{ env.SERVICE_NAME }}:${{ github.ref_name }}
