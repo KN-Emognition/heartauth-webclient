@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "auth-webclient.fullname" . }}
+  labels:
+    app: {{ include "auth-webclient.fullname" . }}
+    {{- include "auth-webclient.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ include "auth-webclient.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "auth-webclient.fullname" . }}
+        {{- include "auth-webclient.labels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          {{- $hasEnv := or .Values.env .Values.secretEnv }}
+          {{- if $hasEnv }}
+          env:
+            {{- /* plain envs: map or list */}}
+            {{- if .Values.env }}
+              {{- if kindIs "map" .Values.env }}
+                {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+                {{- end }}
+              {{- else }}
+                {{- toYaml .Values.env | nindent 12 }}
+              {{- end }}
+            {{- end }}
+
+            {{- /* secret envs */}}
+            {{- if .Values.secretEnv }}
+              {{- /* pick default secret name */}}
+              {{- $defaultSecret := (include "auth-webclient.fullname" .) -}}
+              {{- if and (hasKey .Values "secret") (kindIs "map" .Values.secret) (hasKey .Values.secret "name") -}}
+                {{- $defaultSecret = default $defaultSecret .Values.secret.name -}}
+              {{- else if and (hasKey .Values "secret") (kindIs "string" .Values.secret) -}}
+                {{- $defaultSecret = .Values.secret -}}
+              {{- end }}
+
+              {{- range $name, $ref := .Values.secretEnv }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  {{- if kindIs "map" $ref }}
+                  name: {{ $ref.name }}
+                  key: {{ $ref.key }}
+                  {{- else }}
+                  name: {{ $defaultSecret }}
+                  key: {{ $ref }}
+                  {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold | default 3 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold | default 3 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "auth-webclient.fullname" . }}
+  labels:
+    app: {{ include "auth-webclient.fullname" . }}
+    {{- include "auth-webclient.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ include "auth-webclient.fullname" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port | default 80 }}
+      targetPort: {{ .Values.service.targetPort | default 3000 }}

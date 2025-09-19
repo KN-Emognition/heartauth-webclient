@@ -1,0 +1,49 @@
+# helm template ./helm -f helm/values.yaml > helm/rendered/core.yaml
+namespaceOverride:
+fullnameOverride: auth-webclient
+
+replicas: 2
+
+
+image: 
+  repository: poziomk3/auth-webclient
+  tag: v0.1.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+
+env:
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: next-public-keycloak-client-id
+  NEXT_PUBLIC_KEYCLOAK_ISSUER: next-public-keycloak-issuer
+  NEXTAUTH_URL: nextauth-url
+
+  
+secret:
+  name: auth-webclient-secrets
+secretEnv:
+  NEXTAUTH_SECRET: nextauth-secret
+  NEXT_KEYCLOAK_CLIENT_SECRET: next-keycloak-client-secret
+envFrom:
+
+probes:
+  readiness:
+    path: /api/health
+    initialDelaySeconds: 10
+    periodSeconds: 5
+  liveness:
+    path: /api/health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
