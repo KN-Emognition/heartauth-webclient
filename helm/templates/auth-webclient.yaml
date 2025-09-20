@@ -29,7 +29,6 @@ spec:
           {{- $hasEnv := or .Values.env .Values.secretEnv }}
           {{- if $hasEnv }}
           env:
-            {{- /* plain envs: map or list */}}
             {{- if .Values.env }}
               {{- if kindIs "map" .Values.env }}
                 {{- range $k, $v := .Values.env }}
@@ -40,10 +39,7 @@ spec:
                 {{- toYaml .Values.env | nindent 12 }}
               {{- end }}
             {{- end }}
-
-            {{- /* secret envs */}}
             {{- if .Values.secretEnv }}
-              {{- /* pick default secret name */}}
               {{- $defaultSecret := (include "auth-webclient.fullname" .) -}}
               {{- if and (hasKey .Values "secret") (kindIs "map" .Values.secret) (hasKey .Values.secret "name") -}}
                 {{- $defaultSecret = default $defaultSecret .Values.secret.name -}}
