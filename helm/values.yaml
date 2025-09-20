@@ -25,8 +25,8 @@ env:
 secret:
   name: auth-webclient-secrets
 secretEnv:
-  NEXTAUTH_SECRET: nextauth-secret
-  NEXT_KEYCLOAK_CLIENT_SECRET: next-keycloak-client-secret
+  NEXTAUTH_SECRET: NEXTAUTH_SECRET
+  NEXT_KEYCLOAK_CLIENT_SECRET: NEXT_KEYCLOAK_CLIENT_SECRET
 envFrom:
 
 probes:
