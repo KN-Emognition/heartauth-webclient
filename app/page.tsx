@@ -1,18 +1,14 @@
 "use client";
 import { LoginButton } from "@/components/AuthButtons";
-import authOptions from "@/keycloak/auth";
-import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 
-export default async function Home() {
-  const { data: session, status } = useSession();
+export default function Home() {
+  const { data: session } = useSession();
   const isAuthenticated = !!session;
 
   return (
     <div className="space-y-8">
       <section className="bg-white/90 backdrop-blur rounded-2xl border border-indigo-100 shadow-sm p-8">
-        {/* Status badge */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="space-y-2">
             <div
@@ -120,13 +116,4 @@ export default async function Home() {
       </section>
     </div>
   );
-}
-
-/**
- * Optional helper: in case you want a secondary logout here
- * without importing the client component directly (keeps
- * compilation happy if you want this section to stay server-only).
- */
-function LogoutButtonFallback() {
-  return null;
 }
