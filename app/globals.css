@@ -1,12 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --bg: 255 255 255;
-  --fg: 17 24 39;
-  --muted: 107 114 128;
-  --card: 249 250 251;
-}
-
 html,
 body,
 #__next {
@@ -14,7 +7,5 @@ body,
 }
 
 body {
-  @apply bg-white text-gray-900;
-  background: rgb(var(--bg));
-  color: rgb(var(--fg));
+  margin: 0;
 }

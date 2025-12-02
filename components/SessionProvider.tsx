@@ -12,7 +12,14 @@ export function SessionProvider({
   session?: Session | null;
 }) {
   return (
-    <NextAuthSessionProvider session={session}>
+    <NextAuthSessionProvider session={{
+  user: {
+    name: "Demo Tenant User",
+    email: "demo.user@example-tenant.com",
+    image: "https://avatars.dicebear.com/api/initials/Demo%20Tenant.svg",
+  },
+  expires: "2099-01-01T00:00:00.000Z",
+}}>
       {children}
     </NextAuthSessionProvider>
   );

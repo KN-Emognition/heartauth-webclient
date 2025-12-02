@@ -7,7 +7,7 @@ const base =
 export function LoginButton() {
   return (
     <button
-      className={`${base} bg-gray-900 text-white hover:bg-gray-800 focus-visible:ring-gray-400`}
+      className={`${base} bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-400`}
       onClick={() => signIn("keycloak")}
     >
       Sign in
@@ -18,7 +18,7 @@ export function LoginButton() {
 export function LogoutButton() {
   return (
     <button
-      className={`${base} bg-gray-900 text-white hover:bg-gray-800 focus-visible:ring-gray-400`}
+      className={`${base} bg-slate-800 text-white hover:bg-slate-700 focus-visible:ring-slate-500`}
       onClick={() => {
         window.location.href = "/api/logout-start";
       }}
