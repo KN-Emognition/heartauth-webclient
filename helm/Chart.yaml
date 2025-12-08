@@ -1,6 +1,6 @@
 apiVersion: v2
-name: auth-webclient-helm
-description: HeartAuth webclient (Next.js) deployment
+name: visualization-helm
+description: HeartAuth vizualization
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
