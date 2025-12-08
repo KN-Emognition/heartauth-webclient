@@ -2,6 +2,7 @@ import { ApiConfigProvider } from "@/components/ApiConfigProvider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import ReactQueryProvider from "@/components/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +21,14 @@ export default async function RootLayout({
       <body
         className={`${inter.className} bg-gradient-to-b from-slate-100 via-sky-20 to-indigo-300 text-slate-900`}
       >
-        <ApiConfigProvider
-          initialApiUrl="Put your API URL here"
-          initialApiKey="Put your Api Key here"
-        >
-          {children}
-        </ApiConfigProvider>
+        <ReactQueryProvider>
+          <ApiConfigProvider
+            initialApiUrl="Put your API URL here"
+            initialApiKey="Put your Api Key here"
+          >
+            {children}
+          </ApiConfigProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

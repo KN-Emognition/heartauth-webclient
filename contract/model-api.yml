@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: Model API
+  version: 1.0.0
+
+paths:
+  /v1/predict:
+    post:
+      operationId: predict
+      tags:
+        - Prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictResponse"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictErrorResponse"
+
+  /v1/visualize:
+    post:
+      operationId: visualize
+      tags:
+        - Visualization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisualizationRequest"
+      responses:
+        "200":
+          description: Visualization successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisualizationResponse"
+        "400":
+          description: Visualization Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisualizationErrorResponse"
+
+  /health:
+    get:
+      operationId: health
+      tags:
+        - Health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+components:
+  schemas:
+    PredictRequest:
+      type: object
+      required:
+        - refEcg
+        - testEcg
+      properties:
+        refEcg:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: float
+        testEcg:
+          type: array
+          items:
+            type: number
+            format: float
+
+    PredictResponse:
+      type: object
+      required:
+        - prediction
+        - score
+      properties:
+        prediction:
+          type: boolean
+        score:
+          type: number
+          format: float
+
+    PredictErrorResponse:
+      type: object
+      required:
+        - prediction
+        - error
+      properties:
+        prediction:
+          type: boolean
+          default: false
+        error:
+          type: string
+
+    VisualizationRequest:
+      type: object
+      properties:
+        methods:
+          type: array
+          items:
+            type: string
+            enum:
+              - tsne_fit_on_all_ref
+              - umap_fit_on_all_ref
+              - umap_fit_larfield
+          default:
+            - umap_fit_larfield
+
+    Coordinates:
+      type: object
+      required:
+        - test_ecgs
+        - reference_ecgs
+        - others_ecgs
+      properties:
+        test_ecgs:
+          type: array
+          items:
+            type: number
+        reference_ecgs:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+        others_ecgs:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+
+    VisualizationResponse:
+      type: object
+      required:
+        - mapping_method_to_coordinates
+        - score
+        - authenticated
+        - timestamp
+      properties:
+        mapping_method_to_coordinates:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Coordinates"
+        score:
+          type: number
+          format: float
+        authenticated:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+
+    VisualizationErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+
+    Health:
+      type: object
+      properties:
+        status:
+          type: string

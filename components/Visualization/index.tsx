@@ -1,72 +1,49 @@
+"use client";
 import { useState, useEffect } from "react";
-import Plot from "react-plotly.js";
-import { useApiConfig } from "./ApiConfigProvider";
+import { useApiConfig } from "../ApiConfigProvider";
+import { createClientInstance, ModelApiClient } from "@/contract/client";
+import { components } from "@/contract/generated/model-api";
+import { useVisualizationQuery } from "./useVisualizationQuery";
+import dynamic from "next/dynamic";
+const Plot = dynamic(() => import("react-plotly.js"), {
+  ssr: false,
+});
+// type Coordinates = components["schemas"]["Coordinates"];
 
-// ================= TYPES =================
-
-type Coordinates = {
-  test_ecgs: [number, number];
-  reference_ecgs: [number, number][];
-  others_ecgs: [number, number][];
-};
-
-type VisualizationResponse = {
-  mapping_method_to_coordinates: Record<string, Coordinates>;
-  score: number;
-  authenticated: boolean;
-  timestamp: string;
-};
-
-// ================= CONSTANTS =================
-
-const METHODS = [
+// type VisualizationResponse = components["schemas"]["VisualizationResponse"];
+type Method = components["schemas"]["VisualizationRequest"]["methods"][number];
+const METHODS: Array<Method> = [
   "tsne_fit_on_all_ref",
   "umap_fit_on_all_ref",
   "umap_fit_larfield",
 ] as const;
 
-// ================= COMPONENT =================
-
 export default function VisualizationDashboard() {
-  const [selectedMethods, setSelectedMethods] = useState<string[]>([
+  const [selectedMethods, setSelectedMethods] = useState<Method[]>([
     "umap_fit_larfield",
   ]);
-  const [data, setData] = useState<VisualizationResponse | null>(null);
-  const [loading, setLoading] = useState(false);
   const { apiKey, apiUrl } = useApiConfig();
-  const fetchVisualization = async () => {
-    if (selectedMethods.length === 0) return;
+  const [apiClient, setApiClient] = useState<ModelApiClient | null>(null);
 
-    setLoading(true);
-    try {
-      const res = await fetch(`${apiUrl}/v1/visualize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ methods: selectedMethods }),
-      });
-
-      if (!res.ok) throw new Error("Visualization request failed");
-
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    setApiClient(createClientInstance(apiKey, apiUrl));
+  }, [apiKey, apiUrl]);
+  const { data, isLoading, refetch } = useVisualizationQuery({
+    selectedMethods,
+    apiClient,
+  });
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:5173/ws/visualization");
 
     ws.onopen = () => console.log("WebSocket connected");
-    ws.onmessage = () => fetchVisualization();
+    ws.onmessage = () => refetch();
     ws.onclose = () => console.log("WebSocket closed");
 
     return () => ws.close();
-  }, []);
+  });
 
-  const toggleMethod = (method: string) => {
+  const toggleMethod = (method: Method) => {
     setSelectedMethods((prev) =>
       prev.includes(method)
         ? prev.filter((m) => m !== method)
@@ -90,26 +67,8 @@ export default function VisualizationDashboard() {
           </label>
         ))}
 
-        <button onClick={fetchVisualization} disabled={loading}>
-          {loading ? "Loading..." : "Update"}
-        </button>
-        <button
-          onClick={async () => {
-            const res = await fetch(`${API_BASE}/v1/predict`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                refEcg: [
-                  [0, 0],
-                  [0, 0],
-                ],
-                testEcg: [0, 0],
-              }),
-            });
-          }}
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "DUMMY PREDICT"}
+        <button onClick={() => refetch()} disabled={isLoading}>
+          {isLoading ? "Loading..." : "Update"}
         </button>
       </div>
 

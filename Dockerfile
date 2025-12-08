@@ -1,4 +1,4 @@
-# docker build -t auth-webclient .
+# docker build -t visualization  .
 
 FROM node:20-bookworm AS deps
 WORKDIR /app
