@@ -8,7 +8,6 @@
 {{- else -}}
 {{- include "auth-webclient.name" . -}}
 {{- end -}}
-
 {{- end -}}
 
 {{- define "auth-webclient.labels" -}}
