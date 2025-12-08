@@ -48,7 +48,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/VisualizationResponse"
         "400":
-          description: Visualization Error
+          description: Visualization error
           content:
             application/json:
               schema:
@@ -69,11 +69,10 @@ paths:
 
 components:
   schemas:
+
     PredictRequest:
       type: object
-      required:
-        - refEcg
-        - testEcg
+      required: [refEcg, testEcg]
       properties:
         refEcg:
           type: array
@@ -90,9 +89,7 @@ components:
 
     PredictResponse:
       type: object
-      required:
-        - prediction
-        - score
+      required: [prediction, score]
       properties:
         prediction:
           type: boolean
@@ -102,9 +99,7 @@ components:
 
     PredictErrorResponse:
       type: object
-      required:
-        - prediction
-        - error
+      required: [prediction, error]
       properties:
         prediction:
           type: boolean
@@ -126,6 +121,32 @@ components:
           default:
             - umap_fit_larfield
 
+    EcgPoint:
+      type: object
+      required: [ x, y ]
+      properties:
+        x:
+          type: number
+          format: float
+        y:
+          type: number
+          format: float
+
+    EcgTestPoint:
+      allOf:
+        - $ref: "#/components/schemas/EcgPoint"
+        - type: object
+          required: [ score, authenticated, timestamp ]
+          properties:
+            score:
+              type: number
+              format: float
+            authenticated:
+              type: boolean
+            timestamp:
+              type: string
+              format: date-time
+
     Coordinates:
       type: object
       required:
@@ -136,45 +157,29 @@ components:
         test_ecgs:
           type: array
           items:
-            type: number
+            $ref: "#/components/schemas/EcgTestPoint"
         reference_ecgs:
           type: array
           items:
-            type: array
-            items:
-              type: number
+            $ref: "#/components/schemas/EcgPoint"
         others_ecgs:
           type: array
           items:
-            type: array
-            items:
-              type: number
+            $ref: "#/components/schemas/EcgPoint"
 
     VisualizationResponse:
       type: object
       required:
         - mapping_method_to_coordinates
-        - score
-        - authenticated
-        - timestamp
       properties:
         mapping_method_to_coordinates:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Coordinates"
-        score:
-          type: number
-          format: float
-        authenticated:
-          type: boolean
-        timestamp:
-          type: string
-          format: date-time
 
     VisualizationErrorResponse:
       type: object
-      required:
-        - error
+      required: [ error ]
       properties:
         error:
           type: string
@@ -184,3 +189,4 @@ components:
       properties:
         status:
           type: string
+

@@ -90,15 +90,15 @@ export default function VisualizationDashboard() {
                 <Plot
                   data={[
                     {
-                      x: coords.reference_ecgs.map((p) => p[0]),
-                      y: coords.reference_ecgs.map((p) => p[1]),
+                      x: coords.reference_ecgs.map((p) => p.x),
+                      y: coords.reference_ecgs.map((p) => p.y),
                       type: "scatter",
                       mode: "markers",
                       name: "Reference",
                     },
                     {
-                      x: coords.others_ecgs.map((p) => p[0]),
-                      y: coords.others_ecgs.map((p) => p[1]),
+                      x: coords.others_ecgs.map((p) => p.x),
+                      y: coords.others_ecgs.map((p) => p.y),
                       type: "scatter",
                       mode: "markers",
                       name: "Others",
