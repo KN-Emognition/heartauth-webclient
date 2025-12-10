@@ -5,6 +5,7 @@ import React, {
   useState,
   ReactNode,
   useMemo,
+  useCallback,
 } from "react";
 
 type ApiConfigContextValue = {
@@ -18,19 +19,48 @@ const ApiConfigContext = createContext<ApiConfigContextValue | undefined>(
   undefined
 );
 
+// Change these to whatever defaults you want:
+const DEFAULT_API_URL = "";
+const DEFAULT_API_KEY = "";
+
+// LocalStorage keys
+const API_URL_KEY = "apiConfig.apiUrl";
+const API_KEY_KEY = "apiConfig.apiKey";
+
 type ApiConfigProviderProps = {
   children: ReactNode;
-  initialApiUrl: string;
-  initialApiKey: string;
 };
 
 export const ApiConfigProvider: React.FC<ApiConfigProviderProps> = ({
   children,
-  initialApiUrl,
-  initialApiKey,
 }) => {
-  const [apiUrl, setApiUrl] = useState(initialApiUrl);
-  const [apiKey, setApiKey] = useState(initialApiKey);
+  const [apiUrl, _setApiUrl] = useState<string>(() => {
+    if (typeof window === "undefined") return DEFAULT_API_URL;
+
+    const stored = window.localStorage.getItem(API_URL_KEY);
+    return stored ?? DEFAULT_API_URL;
+  });
+
+  const [apiKey, _setApiKey] = useState<string>(() => {
+    if (typeof window === "undefined") return DEFAULT_API_KEY;
+
+    const stored = window.localStorage.getItem(API_KEY_KEY);
+    return stored ?? DEFAULT_API_KEY;
+  });
+
+  const setApiUrl = useCallback((value: string) => {
+    _setApiUrl(value);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(API_URL_KEY, value);
+    }
+  }, []);
+
+  const setApiKey = useCallback((value: string) => {
+    _setApiKey(value);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(API_KEY_KEY, value);
+    }
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -39,7 +69,7 @@ export const ApiConfigProvider: React.FC<ApiConfigProviderProps> = ({
       setApiUrl,
       setApiKey,
     }),
-    [apiUrl, apiKey]
+    [apiUrl, apiKey, setApiUrl, setApiKey]
   );
 
   return (

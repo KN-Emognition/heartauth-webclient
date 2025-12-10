@@ -22,12 +22,7 @@ export default async function RootLayout({
         className={`${inter.className} bg-gradient-to-b from-slate-100 via-sky-20 to-indigo-300 text-slate-900`}
       >
         <ReactQueryProvider>
-          <ApiConfigProvider
-            initialApiUrl="Put your API URL here"
-            initialApiKey="Put your Api Key here"
-          >
-            {children}
-          </ApiConfigProvider>
+          <ApiConfigProvider>{children}</ApiConfigProvider>
         </ReactQueryProvider>
       </body>
     </html>
