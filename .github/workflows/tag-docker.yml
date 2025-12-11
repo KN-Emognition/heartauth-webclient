@@ -9,7 +9,7 @@ jobs:
     permissions:
       contents: read
     env:
-      SERVICE_NAME: visualization
+      SERVICE_NAME: auth-webclient
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU

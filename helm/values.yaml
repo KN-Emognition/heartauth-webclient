@@ -1,12 +1,13 @@
 # helm template ./helm -f helm/values.yaml > helm/rendered/core.yaml
 namespaceOverride:
-fullnameOverride: visualization
+fullnameOverride: auth-webclient
 
 replicas: 2
 
-image:
-  repository: poziomk3/visualization
-  tag: v0.1.0
+
+image: 
+  repository: poziomk3/auth-webclient
+  tag: v0.1.1
   pullPolicy: IfNotPresent
 
 service:
@@ -14,12 +15,18 @@ service:
   port: 80
   targetPort: 3000
 
-env:
 
-secret:
-  name:
+env:
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: next-public-keycloak-client-id
+  NEXT_PUBLIC_KEYCLOAK_ISSUER: next-public-keycloak-issuer
+  NEXTAUTH_URL: nextauth-url
+
   
+secret:
+  name: auth-webclient-secrets
 secretEnv:
+  NEXTAUTH_SECRET: NEXTAUTH_SECRET
+  NEXT_KEYCLOAK_CLIENT_SECRET: NEXT_KEYCLOAK_CLIENT_SECRET
 envFrom:
 
 probes:
@@ -31,7 +38,7 @@ probes:
     path: /api/health
     initialDelaySeconds: 30
     periodSeconds: 10
-
+  
 resources:
   requests:
     cpu: 100m
@@ -39,3 +46,4 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
