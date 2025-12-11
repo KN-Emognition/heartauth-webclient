@@ -13,7 +13,7 @@ jobs:
     env:
       CHART_DIR: ./helm 
       HELM_VERSION: 0.1.0
-      SERVICE_NAME: auth-webclient
+      SERVICE_NAME: visualization
     steps:
       - uses: actions/checkout@v4
 
