@@ -3,21 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "contract:gen": "openapi-typescript contract/model-api.yml    -o contract/generated/model-api.d.ts",
-    "dev": "npm run contract:gen && next dev --turbopack",
-    "build": "npm run contract:gen && next build",
+    "dev": "next dev --turbopack",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.12",
     "next": "15.4.6",
     "next-auth": "^4.24.11",
-    "openapi-fetch": "^0.14.1",
-    "plotly.js": "^3.3.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-plotly.js": "^2.6.0"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -27,8 +22,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
-    "openapi-typescript": "^7.9.1",
-    "openapi-typescript-codegen": "^0.29.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
