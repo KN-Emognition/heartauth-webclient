@@ -117,9 +117,9 @@ components:
             enum:
               - tsne_fit_on_all_ref
               - umap_fit_on_all_ref
-              - umap_fit_larfield
+              - umap_fit_on_larfield
           default:
-            - umap_fit_larfield
+            - umap_fit_on_larfield
 
     EcgPoint:
       type: object
